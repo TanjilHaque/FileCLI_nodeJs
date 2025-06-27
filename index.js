@@ -5,9 +5,20 @@ const fs = require("fs");
 const path = require("path");
 
 let command = process.argv[2];
-let folderName, fileName, newFileName, data, folderPath, targetPath, oldPath, newPath;
+let folderName,
+  fileName,
+  newFileName,
+  data,
+  folderPath,
+  targetPath,
+  oldPath,
+  newPath;
 
-if ((command === "write" || command === "read") && process.argv[3] && process.argv[3].includes(".")) {
+if (
+  (command === "write" || command === "read") &&
+  process.argv[3] &&
+  process.argv[3].includes(".")
+) {
   fileName = process.argv[3];
   data = process.argv[4];
   folderPath = __dirname;
@@ -15,23 +26,20 @@ if ((command === "write" || command === "read") && process.argv[3] && process.ar
 } else if (command === "list") {
   folderName = process.argv[3];
   targetPath = folderName ? path.join(__dirname, folderName) : __dirname;
-}
-else if(command === 'rename'){
-  if(process.argv[3] && process.argv[3].includes(".")){
+} else if (command === "rename") {
+  if (process.argv[3] && process.argv[3].includes(".")) {
     fileName = process.argv[3];
     newFileName = process.argv[4];
     oldPath = path.join(__dirname, fileName);
-    newPath = path.join(__dirname, newFileName)
-  }else{
+    newPath = path.join(__dirname, newFileName);
+  } else {
     folderName = process.argv[3];
     fileName = process.argv[4];
     newFileName = process.argv[5];
-    oldPath = path.join(__dirname,folderName,fileName);
+    oldPath = path.join(__dirname, folderName, fileName);
     newPath = path.join(__dirname, folderName, newFileName);
   }
-
-}
-else {
+} else {
   folderName = process.argv[3];
   fileName = process.argv[4];
   data = process.argv[5];
@@ -67,9 +75,8 @@ switch (command) {
     break;
   }
 
+  // read Directory (reddir) takes only 2 arguments --> path, callback
   case "list": {
-    // read Directory (reddir) takes only 2 arguments --> path, callback
-
     fs.readdir(targetPath, (err, data) => {
       if (err) {
         console.log("error happend in list: ", err);
@@ -81,28 +88,44 @@ switch (command) {
     });
     break;
   }
-  // takes 3 arguments
+  // rename takes 3 arguments
   case "rename": {
-    fs.rename(oldPath, newPath, (err)=>{
-      if(err){
+    fs.rename(oldPath, newPath, (err) => {
+      if (err) {
         console.log("There has been an error renaming the file");
-      }else{
-        console.log("File rename successful")
+      } else {
+        console.log("File rename successful");
       }
-    })
+    });
     break;
   }
-  case "replace": {
-    break;
-  }
+
   case "remove": {
+    // yet to be done...
     break;
   }
 
   case "addText": {
+    // Append text to an existing file
+    fs.appendFile(targetPath, data, (err) => {
+      if (err) {
+        console.log("Error appending text to file:", err);
+      } else {
+        console.log("Text appended successfully!");
+      }
+    });
     break;
   }
+
   case "addTextNew": {
+    // Append text with a newline
+    fs.appendFile(targetPath, `\n${data}`, (err) => {
+      if (err) {
+        console.log("Error appending new line to file:", err);
+      } else {
+        console.log("New line appended successfully!");
+      }
+    });
     break;
   }
   default:
